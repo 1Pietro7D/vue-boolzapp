@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- #region Bootstrap-->
+    <!-- <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx"
+      crossorigin="anonymous"
+    /> -->
+    <!-- #endregion Bootstrap-->
+    <!-- Font awesone 6.1.2 -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css"
+      integrity="sha512-1sCRPdkRXhBV2PBLUdRb4tMg1w2YPf37qatUFeS7zlBy7jJI8Lf4VHwWfZZfpXtYSLy85pkm9GaYVYMfw5BC1A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <!-- #region css-->
+    <link rel="stylesheet" href="css/style.css" />
+
+    <!-- #endregion css-->
+
+    <!-- #region javascript-->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.7.10/vue.min.js"
+      integrity="sha512-H8u5mlZT1FD7MRlnUsODppkKyk+VEiCmncej8yZW1k/wUT90OQon0F9DSf/2Qh+7L/5UHd+xTLrMszjHEZc2BA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script type="text/javascript" src="js/data.js" defer></script>
+    <script type="text/javascript" src="js/script.js" defer></script>
+    <!-- #endregion javascript -->
+    <link
+      rel="icon"
+      href="https://emoji.slack-edge.com/T91QPE3BP/vue/39ab4efceb6ac665.png"
+    />
+    <title>Boolz App</title>
+  </head>
+  <body>
+    <!--
+    <i class="fas fa-bell-slash"></i>
+    <i class="fas fa-circle-notch"></i>
+    <i class="fas fa-comment-alt"></i>
+    <i class="fas fa-ellipsis-v"></i>
+    <i class="fa fa-search"></i>
+    <i class="fas fa-paperclip"></i>
+    <i class="far fa-smile"></i>
+    <i class="fa fa-microphone"></i>
+    -->
+    <div id="app">
+      <div class="container">
+        <div class="left-panel">
+          <!-- #region logged-user -->
+          <div class="logged-user">
+            <div class="user-info-container">
+              <img class="avatar-icon" src="img/avatar_io.jpg" alt="Sofia" />
+              Sofia
+            </div>
+            <div class="icon-container">
+              <i class="fas fa-circle-notch"></i>
+              <i class="fas fa-comment-alt"></i>
+              <i class="fas fa-ellipsis-v"></i>
+            </div>
+          </div>
+          <!-- #endregion logged-user -->
+
+          <!-- #region notification-area -->
+          <div class="notification-area">
+            <div class="notification-icon">
+              <i class="fas fa-bell-slash"></i>
+            </div>
+            <div class="notification-text">
+              <p>Attiva...</p>
+              <a href="#" target="_blank">Attiva...</a>
+            </div>
+          </div>
+          <!-- #endregion notification-area -->
+
+          <!-- #region search-contacts -->
+          <div class="search-contacts">
+            <i class="fa fa-search"></i>
+            <input
+              class="search-input"
+              type="text"
+              placeholder="Cerca"
+              v-model="searchContacts"
+            />
+          </div>
+          <!-- #endregion search-contacts -->
+
+          <!-- #region contacts-container -->
+          <div class="contacts-container">
+            <div
+              v-for="(contact, index) in contacts"
+              :class="{ active: index === activeIndex }"
+              class="contact"
+              @click="setActiveContact(index)"
+            >
+              <div class="avatar-info-container">
+                <img
+                  class="avatar-icon"
+                  :src="'img/avatar' + contact.avatar +  '.jpg'"
+                  :alt="contact.name"
+                />
+
+                <div class="avatar-info">
+                  <h2>{{ contact.name }}</h2>
+
+                  <p>
+                    {{ contact.messages[contact.messages.length - 1]["message"]
+                    }}
+                  </p>
+                </div>
+                <p class="tx-date">
+                  {{ getHoursMinutes(contact.messages[contact.messages.length -
+                  1]["date"]) }}
+                </p>
+              </div>
+            </div>
+          </div>
+          <!-- #endregion contacts-container -->
+        </div>
+        <div class="right-panel">
+          <!-- #region contact-user -->
+          <div class="contact-user">
+            <div class="user-info-container">
+              <img
+                class="avatar-icon"
+                :src="'img/avatar' + contacts[activeIndex].avatar + '.jpg'"
+                :alt="contacts[activeIndex].name"
+              />
+              {{ contacts[activeIndex].name }}
+            </div>
+
+            <div class="icon-container">
+              <i class="fa fa-search"></i>
+              <i class="fas fa-paperclip"></i>
+              <i class="fas fa-ellipsis-v"></i>
+            </div>
+          </div>
+          <!-- #endregion contact-user -->
+          <!-- #region chat-container -->
+          <div class="chat-container">
+            <div
+              v-for="contact in contacts[activeIndex].messages"
+              :class=" contact.status == 'sent' ? 'm-sent' : 'm-received' "
+              class="message"
+            >
+              <p>{{ contact.message }}</p>
+              <p class="tx-date">{{ getHoursMinutes(contact.date) }}</p>
+            </div>
+          </div>
+          <!-- #region chat-container -->
+          <div class="new-message-container">
+            <i class="far fa-smile"></i>
+            <input
+              type="text"
+              @keyUp.enter="messageToSend"
+              v-model="new_message"
+              placeholder="..."
+            />
+            <i class="fa fa-microphone"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
